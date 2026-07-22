@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --brand-950: #00264D;
+  --brand-900: #002570;
+  --brand-700: #0055AA;
+  --brand-600: #0077B6;
+  --brand-500: #00AEEF;
+  --gold-500: #FFD100;
+  --gold-400: #FFE03D;
+  --header-h: 72px;
+
+  /* Color Variables */
+  --ds-bg: #EBF2F8;
+  --ds-bg-alt: #E2EBF3;
+  --ds-accent: #0891B2;
+  --ds-accent-light: #06B6D4;
+  --ds-text: #0F172A;
+  --ds-text-muted: #64748B;
+  --ds-border: #CBD5E1;
+  --ds-card-radius: 2rem;
+  --ds-dark: #0C1A2E;
+  --ds-dark-card: rgba(255,255,255,0.06);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Force light mode layout to match design */
+body {
+  background: var(--ds-bg);
+  color: var(--ds-text);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Simple overrides for basic elements */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* Form layout utilities */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (max-width: 768px) {
+  .form-grid-2, .form-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Sidebar Responsive Styles */
+.sidebar-container {
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+  .sidebar-container {
+    transform: translateX(-100%);
+  }
+  .sidebar-container.open {
+    transform: translateX(0);
+  }
+  .main-content {
+    margin-left: 0 !important;
+  }
+  .sidebar-toggle {
+    display: block !important;
+  }
+}
+@media (min-width: 1025px) {
+  .sidebar-container.closed {
+    transform: translateX(-100%);
+  }
+  .main-content {
+    margin-left: 260px;
+  }
+  .main-content.sidebar-closed {
+    margin-left: 0 !important;
+  }
+  .sidebar-toggle {
+    display: block !important;
+  }
+}
