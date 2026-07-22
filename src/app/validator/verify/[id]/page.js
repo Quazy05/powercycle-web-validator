@@ -59,6 +59,7 @@ export default function ValidatorVerifyPage({ params }) {
     }
 
     try {
+      // 1. Proses update data di Web Publik / Firebase
       const res = await fetch(`/api/temporary-deposits/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -73,7 +74,35 @@ export default function ValidatorVerifyPage({ params }) {
         })
       });
       const result = await res.json();
+
       if (result.success) {
+        
+        // 2. Kirim data secara real-time ke Web Internal jika status Terverifikasi
+        if (status === 'Terverifikasi') {
+          try {
+            await fetch('http://localhost:3000/api/receive-deposit', { // Ganti URL domain internal jika sudah online
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                id: data.id,
+                date: data.date,
+                time: data.time,
+                user: data.user,
+                client: data.client || '-',
+                unit: data.unit,
+                category: editData.category,
+                jenis: editData.jenis,
+                pengelola: editData.pengelola,
+                weight: editData.weight,
+                status: 'Terverifikasi',
+                remarks: reason
+              })
+            });
+          } catch (syncErr) {
+            console.error('Gagal mengirim webhook ke internal:', syncErr);
+          }
+        }
+
         alert(result.message);
         router.push('/validator/scan');
       } else {
@@ -172,7 +201,6 @@ export default function ValidatorVerifyPage({ params }) {
             </div>
           </div>
 
-          {/* Bagian detail tanpa border kotak */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 28, padding: '0 4px' }}>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12, borderBottom: '1px solid #F1F5F9', paddingBottom: 12 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ds-text-muted)', fontSize: '0.9rem', fontWeight: 600, flexShrink: 0 }}><Package size={18} /> Kategori</span>
