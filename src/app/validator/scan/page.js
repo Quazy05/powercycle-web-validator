@@ -11,10 +11,22 @@ export default function ValidatorScanPage() {
   const handleDecodedText = (decodedText) => {
     try {
       const url = new URL(decodedText);
-      router.push(url.pathname);
+      const parts = url.pathname.split('/');
+      const extractedId = parts.pop();
+      if (extractedId && extractedId !== '{id}') {
+        router.push(`/validator/verify/${extractedId}`);
+      } else {
+        router.push(url.pathname);
+      }
     } catch (e) {
-      if (decodedText.includes('/validator/verify/')) {
-        router.push(decodedText);
+      if (decodedText.includes('/')) {
+        const parts = decodedText.split('/');
+        const extractedId = parts.pop();
+        if (extractedId && extractedId !== '{id}') {
+          router.push(`/validator/verify/${extractedId}`);
+        } else {
+          router.push(`/validator/verify/${decodedText}`);
+        }
       } else {
         router.push(`/validator/verify/${decodedText}`);
       }
