@@ -1,32 +1,38 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { QrCode } from 'lucide-react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { QrCode, Upload } from 'lucide-react';
+import { Html5Qrcode, Html5QrcodeScanner } from 'html5-qrcode';
 
 export default function ValidatorScanPage() {
   const router = useRouter();
   const [scannedId, setScannedId] = useState('');
 
+  const handleDecodedText = (decodedText) => {
+    try {
+      const url = new URL(decodedText);
+      router.push(url.pathname);
+    } catch (e) {
+      if (decodedText.includes('/validator/verify/')) {
+        router.push(decodedText);
+      } else {
+        router.push(`/validator/verify/${decodedText}`);
+      }
+    }
+  };
+
   useEffect(() => {
     const scanner = new Html5QrcodeScanner("reader", { 
       qrbox: { width: 250, height: 250 }, 
-      fps: 5 
+      fps: 5,
+      // Menonaktifkan tombol bawaan "Scan an Image File" dari library
+      showFileButton: false 
     });
 
     scanner.render(
       (decodedText) => {
         scanner.clear();
-        try {
-          const url = new URL(decodedText);
-          router.push(url.pathname);
-        } catch (e) {
-          if (decodedText.includes('/validator/verify/')) {
-            router.push(decodedText);
-          } else {
-            router.push(`/validator/verify/${decodedText}`);
-          }
-        }
+        handleDecodedText(decodedText);
       },
       (err) => {
         // ignore errors
@@ -37,6 +43,21 @@ export default function ValidatorScanPage() {
       scanner.clear().catch(e => console.error(e));
     };
   }, [router]);
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const html5QrCode = new Html5Qrcode("reader");
+    html5QrCode.scanFile(file, true)
+      .then((decodedText) => {
+        html5QrCode.clear();
+        handleDecodedText(decodedText);
+      })
+      .catch((err) => {
+        alert('Gagal mendeteksi QR Code dari gambar. Pastikan gambar jelas.');
+      });
+  };
 
   const handleManualSubmit = (e) => {
     e.preventDefault();
@@ -50,7 +71,7 @@ export default function ValidatorScanPage() {
       <header style={{ background: 'white', padding: '16px 28px', borderBottom: '1px solid var(--ds-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--ds-text)', letterSpacing: '-0.5px' }}>Validator Portal</h2>
-          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--ds-text-muted)' }}>Scan QR Code untuk verifikasi data sampah</p>
+          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--ds-text-muted)' }}>Scan QR Code atau unggah gambar untuk verifikasi data sampah</p>
         </div>
       </header>
       
@@ -59,8 +80,8 @@ export default function ValidatorScanPage() {
           <div style={{ width: 64, height: 64, background: 'rgba(8, 145, 178, 0.1)', color: 'var(--ds-accent)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
             <QrCode size={32} />
           </div>
-          <h3 style={{ margin: '0 0 8px', fontSize: '1.25rem', fontWeight: 800, color: 'var(--ds-text)' }}>Arahkan Kamera ke QR Code</h3>
-          <p style={{ margin: '0 0 24px', color: 'var(--ds-text-muted)', fontSize: '0.9rem' }}>Pindai QR Code yang ditunjukkan oleh User untuk memvalidasi timbulan sampah.</p>
+          <h3 style={{ margin: '0 0 8px', fontSize: '1.25rem', fontWeight: 800, color: 'var(--ds-text)' }}>Scan QR Code / Unggah Gambar</h3>
+          <p style={{ margin: '0 0 24px', color: 'var(--ds-text-muted)', fontSize: '0.9rem' }}>Arahkan kamera ke QR Code atau pilih file gambar QR Code dari perangkat Anda.</p>
           
           <div id="reader" style={{ width: '100%', borderRadius: 16, overflow: 'hidden', border: '2px dashed var(--ds-border)' }}></div>
 

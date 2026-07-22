@@ -1,33 +1,74 @@
-import { NextResponse } from 'next/server';
-import { query } from '../../../lib/db';
+'use client';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { auth } from '../lib/firebase';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 
-export async function POST(request) {
-  try {
-    const { username, password } = await request.json();
-    if (!username || !password) {
-      return NextResponse.json({ error: 'Username and password are required' }, { status: 400 });
-    }
+const AuthContext = createContext();
 
-    const users = await query(
-      'SELECT id, name, email, role, unit, status FROM users WHERE name = ? AND password = ?',
-      [username, password]
-    );
+export const AuthProvider = ({ children }) => {
+  const [role, setRole] = useState(null);
+  const [unit, setUnit] = useState(null);
+  const [username, setUsername] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    if (users && users.length > 0) {
-      const user = users[0];
-      if (user.status !== 'Aktif') {
-        return NextResponse.json({ error: 'Account is inactive' }, { status: 403 });
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUsername(firebaseUser.email);
+        const savedRole = localStorage.getItem('powercycle_role');
+        const savedUnit = localStorage.getItem('powercycle_unit');
+        if (savedRole) setRole(savedRole);
+        if (savedUnit) setUnit(savedUnit);
+      } else {
+        setRole(null);
+        setUnit(null);
+        setUsername(null);
+        localStorage.removeItem('powercycle_role');
+        localStorage.removeItem('powercycle_unit');
       }
+      setLoading(false);
+    });
 
+    return () => unsubscribe();
+  }, []);
 
-
-      return NextResponse.json({ success: true, user });
-    } else {
-      return NextResponse.json({ error: 'Username atau password salah' }, { status: 401 });
+  const login = (selectedRole, selectedUnit = null, selectedUsername = null) => {
+    setRole(selectedRole);
+    if (selectedUnit) {
+      setUnit(selectedUnit);
+      localStorage.setItem('powercycle_unit', selectedUnit);
     }
-  } catch (error) {
-    return NextResponse.json({ 
-      error: error.message 
-    }, { status: 500 });
-  }
-}
+    if (selectedUsername) {
+      setUsername(selectedUsername);
+    }
+    if (selectedRole) {
+      localStorage.setItem('powercycle_role', selectedRole);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      setRole(null);
+      setUnit(null);
+      setUsername(null);
+      localStorage.removeItem('powercycle_role');
+      localStorage.removeItem('powercycle_unit');
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+  };
+
+  const selectUnit = (selectedUnit) => {
+    setUnit(selectedUnit);
+    localStorage.setItem('powercycle_unit', selectedUnit);
+  };
+
+  return (
+    <AuthContext.Provider value={{ role, unit, username, loading, login, logout, selectUnit }}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => useContext(AuthContext);

@@ -100,3 +100,28 @@ table {
     display: block !important;
   }
 }
+
+/* Memperbesar dan memperjelas tombol izin kamera dan mulai scan agar seperti pop-up */
+#reader button {
+  padding: 10px 20px !important;
+  background-color: var(--ds-accent, #0891b2) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  border: none !important;
+  cursor: pointer !important;
+  margin-top: 8px !important;
+  font-family: inherit !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+#reader button:hover {
+  opacity: 0.9 !important;
+}
+
+/* Merapikan teks keterangan status kamera di dalam box */
+#reader__dashboard_section_csr span {
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  color: var(--ds-text, #1e293b) !important;
+}

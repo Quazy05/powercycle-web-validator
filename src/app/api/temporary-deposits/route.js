@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { db as firestore } from '../../lib/firebase';
-import { query } from '../../lib/db';
 
 export async function GET(request) {
   try {
@@ -9,14 +8,14 @@ export async function GET(request) {
     const unit = searchParams.get('unit');
     const user = searchParams.get('user');
 
-    // Ambil dari Firebase
+    // Ambil data dari Firebase Firestore
     const querySnapshot = await getDocs(collection(firestore, 'temporary_deposits'));
     let deposits = [];
     querySnapshot.forEach((docSnap) => {
       deposits.push(docSnap.data());
     });
 
-    // Filter secara manual di server (menghindari keperluan composite index Firebase)
+    // Filter secara manual di server
     if (unit) {
       deposits = deposits.filter(d => d.unit === unit);
     }
@@ -45,7 +44,7 @@ export async function POST(request) {
     const depositId = id || 'TD' + Date.now();
     const depositStatus = 'Menunggu Validasi';
 
-    // Simpan ke Firebase
+    // Simpan data sepenuhnya ke Firebase Firestore
     const docRef = doc(firestore, 'temporary_deposits', depositId);
     await setDoc(docRef, {
       id: depositId,
@@ -60,16 +59,9 @@ export async function POST(request) {
       weight: weight || 0, 
       status: depositStatus, 
       remarks: remarks || '', 
-      alasan_penolakan: ''
+      alasan_penolakan: '',
+      created_at: new Date().toISOString()
     });
-
-    // Catat log ke MySQL
-    const timestamp = time.length === 5 ? `${date} ${time}:00` : `${date} ${time}`;
-    const detailLog = `${category} (${jenis}) ${weight} kg - ${pengelola} (Menunggu Validasi)`;
-    await query(
-      'INSERT INTO activity_log (timestamp, user, action, detail, type) VALUES (?, ?, ?, ?, ?)',
-      [timestamp, user, 'Input Data Sementara', detailLog, 'input']
-    );
 
     return NextResponse.json({ success: true, id: depositId });
   } catch (error) {

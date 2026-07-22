@@ -4,6 +4,8 @@ import { Building2, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { UNIT_LIST } from '../lib/mockData';
+import { auth } from '../lib/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const PLNLogo = ({ size = 64 }) => {
   const customLogoUrl = '/Logo.png';
@@ -17,7 +19,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showUnitModal, setShowUnitModal] = useState(false);
@@ -25,34 +27,42 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username || !password) {
-      alert("Masukkan username dan password");
+    if (!email || !password) {
+      alert("Masukkan email dan password");
       return;
     }
     
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        const user = data.user;
-        const role = user.role.toLowerCase();
-        setDeterminedRole(role);
-        setShowUnitModal(true);
-      } else {
-        alert(data.error || 'Username atau password salah');
+      // Login langsung menggunakan Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const firebaseUser = userCredential.user;
+
+      // Tentukan role (bisa disesuaikan, misal cek email domain atau pakai default user)
+      // Contoh: jika email mengandung admin, set role admin sis
+      let role = 'user';
+      if (email.includes('admin')) {
+        role = 'admin sis';
+      } else if (email.includes('validator')) {
+        role = 'validator';
       }
+
+      setDeterminedRole(role);
+      setShowUnitModal(true);
+
     } catch (err) {
-      console.error('Login connection error:', err);
-      alert('Koneksi ke backend gagal. Pastikan database MySQL sudah aktif dan di-import.');
+      console.error('Firebase Login Error:', err);
+      let errorMessage = 'Gagal melakukan login.';
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        errorMessage = 'Email atau password salah.';
+      } else if (err.code === 'auth/invalid-email') {
+        errorMessage = 'Format email tidak valid.';
+      }
+      alert(errorMessage);
     }
   };
 
   const handleUnitSelect = (unit) => {
-    login(determinedRole, unit, username);
+    login(determinedRole, unit, email);
     setShowUnitModal(false);
     
     if (determinedRole === 'admin sis' || determinedRole === 'admin llk') router.push('/admin');
@@ -111,13 +121,13 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div>
               <label style={{ display: 'block', color: 'var(--ds-text)', fontSize: '0.85rem', fontWeight: 700, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Username
+                Email
               </label>
               <input 
-                type="text" 
-                value={username} 
-                onChange={e => setUsername(e.target.value)} 
-                placeholder="Masukkan username" 
+                type="email" 
+                value={email} 
+                onChange={e => setEmail(e.target.value)} 
+                placeholder="nama@email.com" 
                 style={{ 
                   width: '100%', padding: '14px 16px', border: '1.5px solid var(--ds-border)', borderRadius: 12, 
                   fontSize: '0.95rem', outline: 'none', transition: 'all 0.25s', boxSizing: 'border-box',
@@ -170,8 +180,6 @@ export default function LoginPage() {
               }}
               onMouseEnter={e => { e.target.style.background = 'var(--ds-accent)'; e.target.style.transform = 'translateY(-1px)'; }}
               onMouseLeave={e => { e.target.style.background = 'var(--ds-text)'; e.target.style.transform = 'none'; }}
-              onMouseDown={e => e.target.style.transform = 'scale(0.98)'}
-              onMouseUp={e => e.target.style.transform = 'none'}
             >
               Masuk <ArrowRight size={16} />
             </button>
@@ -184,10 +192,7 @@ export default function LoginPage() {
         </div>
 
         <div style={{ textAlign: 'center', marginTop: 24 }}>
-          <a href="/" style={{ color: 'var(--ds-text-muted)', fontSize: '0.85rem', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center', gap: 6 }}
-             onMouseEnter={e => e.target.style.color = 'var(--ds-accent)'}
-             onMouseLeave={e => e.target.style.color = 'var(--ds-text-muted)'}
-          >
+          <a href="/" style={{ color: 'var(--ds-text-muted)', fontSize: '0.85rem', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             ← Kembali ke Beranda
           </a>
         </div>
@@ -197,16 +202,14 @@ export default function LoginPage() {
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(12, 26, 46, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 100, backdropFilter: 'blur(12px)',
-          animation: 'fadeIn 0.25s ease'
+          zIndex: 100, backdropFilter: 'blur(12px)'
         }}>
           <div style={{
             background: 'white', borderRadius: 'var(--ds-card-radius)', padding: '40px 36px', width: '100%', maxWidth: 440,
             boxShadow: '0 32px 80px -10px rgba(12, 26, 46, 0.15)', border: '1px solid rgba(203, 213, 225, 0.7)',
-            boxSizing: 'border-box',
-            animation: 'slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)'
+            boxSizing: 'border-box'
           }}>
-            <h2 style={{ margin: '0 0 8px 0', color: 'var(--ds-text)', fontSize: '1.45rem', fontWeight: 800, textAlign: 'center', letterSpacing: '-0.5px' }}>Pilih Unit Lokasi</h2>
+            <h2 style={{ margin: '0 0 8px 0', color: 'var(--ds-text)', fontSize: '1.45rem', fontWeight: 800, textAlign: 'center' }}>Pilih Unit Lokasi</h2>
             <p style={{ color: 'var(--ds-text-muted)', fontSize: '0.88rem', textAlign: 'center', marginBottom: 28, marginTop: 0 }}>
               Silakan pilih unit operasional Anda untuk melanjutkan login
             </p>
@@ -222,17 +225,8 @@ export default function LoginPage() {
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
                     fontFamily: 'inherit', boxSizing: 'border-box'
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-accent)'; e.currentTarget.style.background = 'rgba(8, 145, 178, 0.03)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ds-border)'; e.currentTarget.style.background = 'white'; e.currentTarget.style.transform = 'none'; }}
                 >
-                  <div style={{ 
-                    width: '100%', 
-                    height: 120, 
-                    borderRadius: 12, 
-                    overflow: 'hidden',
-                    marginBottom: 8,
-                    background: 'var(--ds-bg-alt)'
-                  }}>
+                  <div style={{ width: '100%', height: 120, borderRadius: 12, overflow: 'hidden', marginBottom: 8, background: 'var(--ds-bg-alt)' }}>
                     <img 
                       src={unit === 'Wonogiri' ? '/PLTA Wonogiri.jpeg' : '/PLTA PB. Soedirman.jpeg'} 
                       alt={unit}
@@ -253,25 +247,12 @@ export default function LoginPage() {
                 border: 'none', marginTop: 24, cursor: 'pointer', fontWeight: 700, fontSize: '0.88rem',
                 fontFamily: 'inherit', display: 'block', textAlign: 'center'
               }}
-              onMouseEnter={e => e.target.style.color = 'var(--ds-text)'}
-              onMouseLeave={e => e.target.style.color = 'var(--ds-text-muted)'}
             >
               Batal Login
             </button>
           </div>
         </div>
       )}
-
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-      `}} />
     </div>
   );
 }
