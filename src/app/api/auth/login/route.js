@@ -1,6 +1,6 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
-import { auth } from '../../../lib/db';
+import { auth } from '@/lib/db';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 
 const AuthContext = createContext();
