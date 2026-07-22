@@ -80,7 +80,7 @@ export default function ValidatorVerifyPage({ params }) {
         // 2. Kirim data secara real-time ke Web Internal jika status Terverifikasi
         if (status === 'Terverifikasi') {
           try {
-            await fetch('http://localhost:3000/api/receive-deposit', { // Ganti URL domain internal jika sudah online
+            await fetch('/api/receive-deposit', { // Ganti URL domain internal jika sudah online
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
