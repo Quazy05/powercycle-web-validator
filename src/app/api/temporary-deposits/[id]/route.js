@@ -83,6 +83,9 @@ export async function PUT(request, { params }) {
         alasan_penolakan: alasan_penolakan || '',
         remarks: finalRemarks,
         validator_name: validator,
+        validated_at: new Date().toISOString(),
+        validated_by: validator,
+        synced_to_mysql: false,
         updated_at: new Date().toISOString()
       });
 
@@ -115,6 +118,9 @@ export async function PUT(request, { params }) {
         status: 'Terverifikasi',
         remarks: finalRemarks,
         validator_name: validator,
+        validated_at: new Date().toISOString(),
+        validated_by: validator,
+        synced_to_mysql: false,
         updated_at: new Date().toISOString()
       });
 

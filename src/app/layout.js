@@ -1,30 +1,15 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata = {
-  title: "Powercycle",
-  description: "Sistem Pencatatan & Monitoring Bank Sampah",
+  title: "Powercycle Validasi",
+  description: "Sistem Validasi & Landing Page Bank Sampah PLTA Mrica",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="id"
-      data-scroll-behavior="smooth"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="id" data-scroll-behavior="smooth" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
         <AuthProvider>
           {children}
@@ -34,3 +19,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
