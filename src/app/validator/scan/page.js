@@ -36,8 +36,7 @@ export default function ValidatorScanPage() {
   useEffect(() => {
     const scanner = new Html5QrcodeScanner("reader", { 
       qrbox: { width: 250, height: 250 }, 
-      fps: 5,
-      // Menonaktifkan tombol bawaan "Scan an Image File" dari library
+      fps: 5,
       showFileButton: false 
     });
 
@@ -46,8 +45,7 @@ export default function ValidatorScanPage() {
         scanner.clear();
         handleDecodedText(decodedText);
       },
-      (err) => {
-        // ignore errors
+      (err) => {
       }
     );
 

@@ -58,8 +58,7 @@ export default function ValidatorVerifyPage({ params }) {
       return;
     }
 
-    try {
-      // 1. Proses update data di Web Publik / Firebase
+    try {
       const res = await fetch(`/api/temporary-deposits/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -75,9 +74,7 @@ export default function ValidatorVerifyPage({ params }) {
       });
       const result = await res.json();
 
-      if (result.success) {
-        
-        // 2. Kirim data secara real-time ke Web Internal jika status Terverifikasi
+      if (result.success) {
         if (status === 'Terverifikasi') {
           try {
             await fetch('/api/receive-deposit', { // Ganti URL domain internal jika sudah online

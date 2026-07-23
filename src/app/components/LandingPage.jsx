@@ -42,9 +42,7 @@ const PLNLogo = ({ size = 64, unit = '' }) => {
     return <img src={customLogoUrl} alt="Logo" style={{ height: size, maxWidth: '100%', objectFit: 'contain' }} />;
   }
   return null;
-};
-
-// Data lokasi untuk Map (Google Maps Embed - titik lokasi PLTA)
+};
 const MAP_LOCATIONS = [
   { id: 'Wonogiri', name: 'PLTA Wonogiri', embedUrl: 'https://maps.google.com/maps?q=PLTA+Wonogiri&z=15&output=embed' },
   { id: 'Banjarnegara', name: 'PLTA PB.Soedirman', embedUrl: 'https://maps.google.com/maps?q=PLTA+Mrica+Banjarnegara&z=15&output=embed' }
@@ -56,16 +54,12 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
   const [scrolled, setScrolled] = useState(false);
   const [activeUnit, setActiveUnit] = useState('all');
   const [showTopBtn, setShowTopBtn] = useState(false);
-  const [activeMapLoc, setActiveMapLoc] = useState(MAP_LOCATIONS[0]);
-
-  // Firebase data state
+  const [activeMapLoc, setActiveMapLoc] = useState(MAP_LOCATIONS[0]);
   const [firebaseDeposits, setFirebaseDeposits] = useState(initialDeposits);
   const [firebaseStats, setFirebaseStats] = useState(null);
   const [firebaseMonthlyData, setFirebaseMonthlyData] = useState(null);
   const [firebaseUnitStats, setFirebaseUnitStats] = useState(null);
-  const [dataLoading, setDataLoading] = useState(true);
-
-  // Fetch data from Firebase via API
+  const [dataLoading, setDataLoading] = useState(true);
   useEffect(() => {
     async function fetchStats() {
       try {
@@ -93,21 +87,17 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Filter data transaksi berdasarkan Unit yang aktif
+  }, []);
   const currentFilteredDeposits = useMemo(() => {
     return activeUnit === 'all'
       ? firebaseDeposits
       : firebaseDeposits.filter(d => d.unit === activeUnit);
   }, [activeUnit, firebaseDeposits]);
 
-  const monthlyChartData = useMemo(() => {
-    // If we have Firebase monthly data, use it (for 'all' filter)
+  const monthlyChartData = useMemo(() => {
     if (firebaseMonthlyData && activeUnit === 'all') {
       return firebaseMonthlyData;
-    }
-    // Otherwise calculate from filtered deposits
+    }
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const data = months.map(m => ({ bulan: m, berat: 0 }));
 
@@ -126,8 +116,7 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
   const stats = useMemo(() => {
     if (firebaseStats && activeUnit === 'all') {
       return firebaseStats;
-    }
-    // Calculate from filtered deposits for specific unit
+    }
     const totalWeight = currentFilteredDeposits.reduce((s, d) => s + (Number(d.weight) || 0), 0);
     const organikWeight = currentFilteredDeposits.filter(d => d.category === 'Organik').reduce((s, d) => s + (Number(d.weight) || 0), 0);
     const anorganikWeight = currentFilteredDeposits.filter(d => d.category === 'Anorganik').reduce((s, d) => s + (Number(d.weight) || 0), 0);
@@ -469,7 +458,7 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
         </div>
       </section>
 
-      {/* INTERACTIVE GOOGLE MAPS SECTION */}
+      
       <section id="peta" style={{ padding: '120px 24px', background: 'var(--ds-bg)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 60 }}>
@@ -478,7 +467,7 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
           </div>
 
           <div className="map-section-layout">
-            {/* LEFT: Unit Selection Panel */}
+            
             <div className="map-sidebar">
               <div className="glass-panel" style={{ borderRadius: '1.5rem', padding: '28px', height: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--ds-text)', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -526,7 +515,7 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
               </div>
             </div>
 
-            {/* RIGHT: Google Map (larger) */}
+            
             <div className="map-iframe-wrapper clay-card">
               <iframe
                 src={activeMapLoc.embedUrl}

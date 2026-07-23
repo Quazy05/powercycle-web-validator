@@ -18,3 +18,6 @@ out/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# One-time scripts and utilities
+keperluan/
