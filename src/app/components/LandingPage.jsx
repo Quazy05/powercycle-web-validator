@@ -58,6 +58,34 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
   const [showTopBtn, setShowTopBtn] = useState(false);
   const [activeMapLoc, setActiveMapLoc] = useState(MAP_LOCATIONS[0]);
 
+  // Firebase data state
+  const [firebaseDeposits, setFirebaseDeposits] = useState(initialDeposits);
+  const [firebaseStats, setFirebaseStats] = useState(null);
+  const [firebaseMonthlyData, setFirebaseMonthlyData] = useState(null);
+  const [firebaseUnitStats, setFirebaseUnitStats] = useState(null);
+  const [dataLoading, setDataLoading] = useState(true);
+
+  // Fetch data from Firebase via API
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        if (data.success) {
+          setFirebaseDeposits(data.deposits || []);
+          setFirebaseStats(data.stats || null);
+          setFirebaseMonthlyData(data.monthlyData || null);
+          setFirebaseUnitStats(data.unitStats || null);
+        }
+      } catch (error) {
+        console.error('Failed to fetch stats from Firebase:', error);
+      } finally {
+        setDataLoading(false);
+      }
+    }
+    fetchStats();
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
@@ -70,11 +98,16 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
   // Filter data transaksi berdasarkan Unit yang aktif
   const currentFilteredDeposits = useMemo(() => {
     return activeUnit === 'all'
-      ? initialDeposits
-      : initialDeposits.filter(d => d.unit === activeUnit);
-  }, [activeUnit, initialDeposits]);
+      ? firebaseDeposits
+      : firebaseDeposits.filter(d => d.unit === activeUnit);
+  }, [activeUnit, firebaseDeposits]);
 
   const monthlyChartData = useMemo(() => {
+    // If we have Firebase monthly data, use it (for 'all' filter)
+    if (firebaseMonthlyData && activeUnit === 'all') {
+      return firebaseMonthlyData;
+    }
+    // Otherwise calculate from filtered deposits
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const data = months.map(m => ({ bulan: m, berat: 0 }));
 
@@ -88,30 +121,35 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
       }
     });
     return data;
-  }, [currentFilteredDeposits]);
+  }, [currentFilteredDeposits, firebaseMonthlyData, activeUnit]);
 
   const stats = useMemo(() => {
+    if (firebaseStats && activeUnit === 'all') {
+      return firebaseStats;
+    }
+    // Calculate from filtered deposits for specific unit
     const totalWeight = currentFilteredDeposits.reduce((s, d) => s + (Number(d.weight) || 0), 0);
     const organikWeight = currentFilteredDeposits.filter(d => d.category === 'Organik').reduce((s, d) => s + (Number(d.weight) || 0), 0);
     const anorganikWeight = currentFilteredDeposits.filter(d => d.category === 'Anorganik').reduce((s, d) => s + (Number(d.weight) || 0), 0);
     const residuWeight = currentFilteredDeposits.filter(d => d.category === 'Residu').reduce((s, d) => s + (Number(d.weight) || 0), 0);
     const totalTransactions = currentFilteredDeposits.length;
-    const totalUsers = activeUnit === 'all'
-      ? mockUsers.filter(u => u.role === 'User').length
-      : mockUsers.filter(u => u.role === 'User' && u.unit === activeUnit).length;
+    const uniqueUsers = new Set(currentFilteredDeposits.map(d => d.user).filter(Boolean));
 
-    return { totalWeight, organikWeight, anorganikWeight, residuWeight, totalTransactions, totalUsers };
-  }, [activeUnit, currentFilteredDeposits, mockUsers]);
+    return { totalWeight, organikWeight, anorganikWeight, residuWeight, totalTransactions, totalUsers: uniqueUsers.size };
+  }, [activeUnit, currentFilteredDeposits, firebaseStats]);
 
   const unitStats = useMemo(() => {
+    if (firebaseUnitStats) {
+      return firebaseUnitStats;
+    }
     return UNIT_LIST.map(unit => {
-      const unitDeposits = initialDeposits.filter(d => d.unit === unit);
+      const unitDeposits = firebaseDeposits.filter(d => d.unit === unit);
       const totalWeight = unitDeposits.reduce((s, d) => s + (Number(d.weight) || 0), 0);
       const totalTransactions = unitDeposits.length;
-      const nasabah = mockUsers.filter(u => u.unit === unit && u.role === 'User').length;
-      return { unit, totalWeight, totalTransactions, nasabah };
+      const uniqueUsers = new Set(unitDeposits.map(d => d.user).filter(Boolean));
+      return { unit, totalWeight, totalTransactions, nasabah: uniqueUsers.size };
     });
-  }, [currentFilteredDeposits, activeUnit, mockUsers]);
+  }, [firebaseDeposits, firebaseUnitStats]);
 
   const pemanfaatanStats = useMemo(() => {
     return {
