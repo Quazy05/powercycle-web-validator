@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '../../../lib/firebase';
+import { db } from '../../lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
 export const dynamic = 'force-dynamic';
