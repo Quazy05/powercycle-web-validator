@@ -10,7 +10,7 @@ export async function GET() {
       data.push(docSnap.data());
     });
 
-    // Urutkan berdasarkan nama_pengelola secara ascending secara manual
+    
     data.sort((a, b) => a.nama_pengelola.localeCompare(b.nama_pengelola));
 
     return NextResponse.json({ success: true, data });

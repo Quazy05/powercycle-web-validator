@@ -33,12 +33,12 @@ export default function LoginPage() {
     }
     
     try {
-      // Login langsung menggunakan Firebase Auth
+      
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
 
-      // Tentukan role (bisa disesuaikan, misal cek email domain atau pakai default user)
-      // Contoh: jika email mengandung admin, set role admin sis
+      
+      
       let role = 'user';
       if (email.includes('admin')) {
         role = 'admin sis';

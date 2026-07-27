@@ -7,7 +7,7 @@ export async function PUT(request, { params }) {
     const body = await request.json();
     const pool = await getDbConnection();
 
-    // Check if exists
+    
     const [rows] = await pool.query('SELECT * FROM clients WHERE id = ?', [id]);
     if (!rows || rows.length === 0) {
       return NextResponse.json({ error: 'Client not found' }, { status: 404 });

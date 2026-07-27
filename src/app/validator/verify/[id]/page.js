@@ -77,7 +77,7 @@ export default function ValidatorVerifyPage({ params }) {
       if (result.success) {
         if (status === 'Terverifikasi') {
           try {
-            await fetch('/api/receive-deposit', { // Ganti URL domain internal jika sudah online
+            await fetch('/api/receive-deposit', { 
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

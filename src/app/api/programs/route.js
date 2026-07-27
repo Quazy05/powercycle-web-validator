@@ -6,7 +6,7 @@ export async function GET() {
     const db = await getDbConnection();
     const [rows] = await db.execute('SELECT * FROM programs ORDER BY nama ASC');
     
-    // Parse the fields JSON if needed (mysql2 might already parse it, but just to be safe)
+    
     const programs = rows.map(row => ({
       ...row,
       fields: typeof row.fields === 'string' ? JSON.parse(row.fields) : row.fields

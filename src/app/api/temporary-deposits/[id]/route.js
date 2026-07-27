@@ -62,11 +62,11 @@ export async function PUT(request, { params }) {
     const finalWeight = weight ? parseFloat(weight) : parseFloat(data.weight);
     const validator = validator_name || 'Validator';
 
-    // Jika Data Ditolak
+    
     if (status === 'Ditolak') {
       const finalRemarks = `Ditolak oleh: ${validator} | Alasan: ${alasan_penolakan || '-'}`;
 
-      // Simpan ke collection 'deposits' dengan status Ditolak
+      
       const depositRef = doc(firestore, 'deposits', id);
       await setDoc(depositRef, {
         id: data.id,
@@ -89,7 +89,7 @@ export async function PUT(request, { params }) {
         updated_at: new Date().toISOString()
       });
 
-      // Hapus dari temporary_deposits
+      
       await deleteDoc(docRef);
 
       return NextResponse.json({
@@ -98,11 +98,11 @@ export async function PUT(request, { params }) {
       });
     }
 
-    // Jika Data Terverifikasi / Sesuai
+    
     if (status === 'Terverifikasi' || status === 'Tervalidasi') {
       const finalRemarks = `Divalidasi oleh: ${validator}` + (data.remarks ? ` | ${data.remarks}` : '');
 
-      // Simpan ke collection 'deposits' dengan status Terverifikasi
+      
       const depositRef = doc(firestore, 'deposits', id);
       await setDoc(depositRef, {
         id: data.id,
@@ -124,7 +124,7 @@ export async function PUT(request, { params }) {
         updated_at: new Date().toISOString()
       });
 
-      // Hapus dari temporary_deposits
+      
       await deleteDoc(docRef);
 
       return NextResponse.json({

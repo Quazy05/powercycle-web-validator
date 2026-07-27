@@ -7,7 +7,7 @@ export async function PUT(request, { params }) {
     const body = await request.json();
     const pool = await getDbConnection();
 
-    // Check if exists
+    
     const [rows] = await pool.query('SELECT * FROM rekapitulasi_program WHERE id = ?', [id]);
     if (!rows || rows.length === 0) {
       return NextResponse.json({ error: 'Rekap program not found' }, { status: 404 });

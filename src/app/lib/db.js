@@ -22,7 +22,7 @@ export async function getDbConnection() {
 
   try {
     pool = mysql.createPool(config);
-    // Test the pool connection to verify MySQL is running
+    
     const connection = await pool.getConnection();
     connection.release();
     console.log('MySQL Database pool connected successfully.');

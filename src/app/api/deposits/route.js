@@ -57,7 +57,7 @@ export async function POST(request) {
       );
     }
 
-    // Automatically insert activity log
+    
     const timestamp = time.length === 5 ? `${date} ${time}:00` : `${date} ${time}`;
     const detailLog = `${category} (${jenis}) ${weight} kg - ${pengelola}`;
     await query(

@@ -10,7 +10,7 @@ export async function GET() {
       data.push(docSnap.data());
     });
 
-    // Urutkan berdasarkan kategori lalu nama_jenis secara manual
+    
     data.sort((a, b) => {
       if (a.kategori === b.kategori) {
         return a.nama_jenis.localeCompare(b.nama_jenis);

@@ -46,7 +46,7 @@ export async function POST(request) {
       [buktiId, month, unit, no_bukti, buktiStatus, img_url || null]
     );
 
-    // Insert log
+    
     const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
     await query(
       'INSERT INTO activity_log (timestamp, user, action, detail, type) VALUES (?, ?, ?, ?, ?)',

@@ -8,14 +8,14 @@ export async function GET(request) {
     const unit = searchParams.get('unit');
     const user = searchParams.get('user');
 
-    // Ambil data dari Firebase Firestore
+    
     const querySnapshot = await getDocs(collection(firestore, 'temporary_deposits'));
     let deposits = [];
     querySnapshot.forEach((docSnap) => {
       deposits.push(docSnap.data());
     });
 
-    // Filter secara manual di server
+    
     if (unit) {
       deposits = deposits.filter(d => d.unit === unit);
     }
@@ -23,7 +23,7 @@ export async function GET(request) {
       deposits = deposits.filter(d => d.user === user);
     }
 
-    // Urutkan berdasarkan tanggal terbaru
+    
     deposits.sort((a, b) => {
       const dtA = new Date(`${a.date} ${a.time}`);
       const dtB = new Date(`${b.date} ${b.time}`);
@@ -44,7 +44,7 @@ export async function POST(request) {
     const depositId = id || 'TD' + Date.now();
     const depositStatus = 'Menunggu Validasi';
 
-    // Simpan data sepenuhnya ke Firebase Firestore
+    
     const docRef = doc(firestore, 'temporary_deposits', depositId);
     await setDoc(docRef, {
       id: depositId,

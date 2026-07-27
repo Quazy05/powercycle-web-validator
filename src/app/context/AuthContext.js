@@ -7,26 +7,26 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);
-  const [unit, setUnit] = useState(null); // 'Wonogiri' or 'Banjarnegara'
+  const [unit, setUnit] = useState(null); 
   const [username, setUsername] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Memantau status auth Firebase saat halaman dimuat/refresh
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        // Jika user aktif di Firebase, ambil email/username
+        
         setUsername(firebaseUser.email);
         
-        // Catatan: Jika Anda menyimpan role di localStorage atau Custom Claims, 
-        // Anda bisa mengambilnya di sini. Untuk contoh ini, kita ambil dari localStorage jika ada.
+        
+        
         const savedRole = localStorage.getItem('powercycle_role');
         const savedUnit = localStorage.getItem('powercycle_unit');
         
         if (savedRole) setRole(savedRole);
         if (savedUnit) setUnit(savedUnit);
       } else {
-        // Jika tidak ada user (logout)
+        
         setRole(null);
         setUnit(null);
         setUsername(null);

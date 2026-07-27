@@ -7,24 +7,24 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    // Fetch verified deposits from Firebase
+    
     const depositsSnapshot = await getDocs(collection(db, 'deposits'));
     const deposits = [];
     depositsSnapshot.forEach(doc => {
       deposits.push({ id: doc.id, ...doc.data() });
     });
 
-    // Fetch temporary deposits (pending) from Firebase
+    
     const tempSnapshot = await getDocs(collection(db, 'temporary_deposits'));
     const tempDeposits = [];
     tempSnapshot.forEach(doc => {
       tempDeposits.push({ id: doc.id, ...doc.data() });
     });
 
-    // Combine all deposits
+    
     const allDeposits = [...deposits, ...tempDeposits];
 
-    // Calculate stats
+    
     const totalWeight = allDeposits.reduce((s, d) => s + (Number(d.weight) || 0), 0);
     const verifiedWeight = deposits.reduce((s, d) => s + (Number(d.weight) || 0), 0);
     const pendingCount = tempDeposits.filter(d => d.status === 'Menunggu Validasi').length;
@@ -36,10 +36,10 @@ export async function GET() {
     const anorganikWeight = allDeposits.filter(d => d.category === 'Anorganik').reduce((s, d) => s + (Number(d.weight) || 0), 0);
     const residuWeight = allDeposits.filter(d => d.category === 'Residu').reduce((s, d) => s + (Number(d.weight) || 0), 0);
 
-    // Unique users
+    
     const uniqueUsers = new Set(allDeposits.map(d => d.user).filter(Boolean));
 
-    // Monthly data for chart (current year)
+    
     const currentYear = new Date().getFullYear();
     const monthlyData = Array.from({ length: 12 }, (_, i) => ({ bulan: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i], berat: 0 }));
     allDeposits.forEach(d => {
@@ -51,7 +51,7 @@ export async function GET() {
       }
     });
 
-    // Unit stats
+    
     const unitMap = {};
     allDeposits.forEach(d => {
       const unit = d.unit || 'Lainnya';

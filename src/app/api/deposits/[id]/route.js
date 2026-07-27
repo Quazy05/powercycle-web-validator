@@ -6,7 +6,7 @@ export async function DELETE(request, { params }) {
     const { id } = await params;
     const pool = await getDbConnection();
     
-    // Check if deposit exists
+    
     const [deposits] = await pool.query('SELECT * FROM deposits WHERE id = ?', [id]);
     if (!deposits || deposits.length === 0) {
       return NextResponse.json({ error: 'Deposit not found' }, { status: 404 });
@@ -14,7 +14,7 @@ export async function DELETE(request, { params }) {
 
     const deposit = deposits[0];
 
-    // Delete deposit
+    
     await pool.query('DELETE FROM deposits WHERE id = ?', [id]);
 
     if (deposit.status === 'Terverifikasi') {
@@ -38,7 +38,7 @@ export async function PUT(request, { params }) {
     const body = await request.json();
     const pool = await getDbConnection();
 
-    // Check if deposit exists
+    
     const [deposits] = await pool.query('SELECT * FROM deposits WHERE id = ?', [id]);
     if (!deposits || deposits.length === 0) {
       return NextResponse.json({ error: 'Deposit not found' }, { status: 404 });
@@ -57,13 +57,13 @@ export async function PUT(request, { params }) {
       remarks: body.remarks !== undefined ? body.remarks : current.remarks
     };
 
-    // Update deposit
+    
     await pool.query(
       'UPDATE deposits SET date = ?, time = ?, category = ?, jenis = ?, pengelola = ?, weight = ?, status = ?, remarks = ? WHERE id = ?',
       [updatedData.date, updatedData.time, updatedData.category, updatedData.jenis, updatedData.pengelola, updatedData.weight, updatedData.status, updatedData.remarks, id]
     );
 
-    // Sync neraca_sampah
+    
     if (current.status === 'Terverifikasi' && updatedData.status !== 'Terverifikasi') {
       const month = current.date.substring(0, 7);
       await pool.query(
