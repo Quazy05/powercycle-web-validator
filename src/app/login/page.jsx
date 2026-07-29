@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Building2, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { UNIT_LIST } from '../lib/mockData';
 import { auth } from '../lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -17,6 +17,8 @@ const PLNLogo = ({ size = 64 }) => {
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get('returnUrl');
   const router = useRouter();
 
   const [email, setEmail] = useState('');
