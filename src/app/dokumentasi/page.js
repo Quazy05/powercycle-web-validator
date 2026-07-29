@@ -459,37 +459,37 @@ export default function DokumentasiPage() {
         )}
 
         {step === 'camera' && (
-          <div style={{ width: '100%', height: '100%', position: 'relative', flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', flex: 1, objectFit: 'cover', background: '#000' }} />
+          <div className="cam-container">
+            <video ref={videoRef} autoPlay playsInline muted className="cam-video" />
 
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.7)', padding: '12px 16px', borderTop: '2px solid rgba(8, 145, 178, 0.8)' }}>
-              <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                <div style={{ width: 80, height: 80, borderRadius: 10, overflow: 'hidden', border: '1.5px solid rgba(255,255,255,0.2)', background: 'rgba(20,70,55,0.7)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {location ? <MapPin size={24} color="#EF4444" /> : <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', textAlign: 'center' }}>GPS...</span>}
+            <div className="cam-info-panel">
+              <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <div className="cam-map-thumb">
+                  {location ? <MapPin size={20} color="#EF4444" /> : <span style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', textAlign: 'center' }}>GPS...</span>}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ margin: '0 0 2px', fontSize: '0.82rem', fontWeight: 700, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <p className="cam-info-line cam-info-title">
                     {address ? `${address.district || address.village}, ${address.state}` : 'Mencari lokasi...'}
                   </p>
-                  <p style={{ margin: '0 0 2px', fontSize: '0.7rem', color: '#E2E8F0' }}>Indonesia</p>
-                  {address && <p style={{ margin: '0 0 2px', fontSize: '0.65rem', color: '#CBD5E1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{address.village}, {address.regency}, {address.postcode}</p>}
-                  {location && <p style={{ margin: '0 0 2px', fontSize: '0.65rem', color: '#94A3B8' }}>Lat {location.lat.toFixed(6)}° Long {location.lng.toFixed(6)}°</p>}
-                  <p style={{ margin: '0 0 2px', fontSize: '0.7rem', fontWeight: 700, color: '#FCD34D' }}>{formatTime(currentTime)}</p>
-                  <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 700, color: '#34D399' }}>{kegiatan} &bull; Unit: {unit || '-'}</p>
+                  <p className="cam-info-line" style={{ color: '#E2E8F0' }}>Indonesia</p>
+                  {address && <p className="cam-info-line cam-info-sub">{address.village}, {address.regency}, {address.postcode}</p>}
+                  {location && <p className="cam-info-line cam-info-sub" style={{ color: '#94A3B8' }}>Lat {location.lat.toFixed(6)}° Long {location.lng.toFixed(6)}°</p>}
+                  <p className="cam-info-line" style={{ fontWeight: 700, color: '#FCD34D' }}>{formatTime(currentTime)}</p>
+                  <p className="cam-info-line" style={{ fontWeight: 700, color: '#34D399', marginBottom: 0 }}>{kegiatan} &bull; Unit: {unit || '-'}</p>
                 </div>
               </div>
             </div>
 
-            <div style={{ position: 'absolute', bottom: 200, left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 24, padding: 20 }}>
-              <button onClick={switchCamera} style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+            <div className="cam-controls">
+              <button onClick={switchCamera} className="cam-btn cam-btn-secondary">
                 <RefreshCw size={20} />
               </button>
 
-              <button onClick={capturePhoto} style={{ width: 72, height: 72, borderRadius: '50%', background: 'white', border: '4px solid var(--ds-accent)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 24px rgba(0,0,0,0.4)', transition: 'transform 0.15s' }} onMouseDown={e => e.target.style.transform = 'scale(0.92)'} onMouseUp={e => e.target.style.transform = 'scale(1)'}>
-                <div style={{ width: 56, height: 56, borderRadius: '50%', border: '3px solid var(--ds-accent)' }} />
+              <button onClick={capturePhoto} className="cam-btn-capture" onMouseDown={e => e.currentTarget.style.transform = 'scale(0.92)'} onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}>
+                <div className="cam-btn-capture-inner" />
               </button>
 
-              <button onClick={() => { stopCamera(); setStep('select'); }} style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(239,68,68,0.3)', border: '1px solid rgba(239,68,68,0.5)', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+              <button onClick={() => { stopCamera(); setStep('select'); }} className="cam-btn cam-btn-close">
                 <ArrowLeft size={20} />
               </button>
             </div>
@@ -537,6 +537,99 @@ export default function DokumentasiPage() {
           0% { transform: scale(0.5); opacity: 0; }
           70% { transform: scale(1.1); }
           100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Camera container - fills available space */
+        .cam-container {
+          width: 100%; height: 100%; position: relative; flex: 1;
+          display: flex; flex-direction: column; overflow: hidden;
+        }
+        .cam-video {
+          width: 100%; flex: 1; object-fit: cover; background: #000;
+        }
+
+        /* Info panel - bottom in portrait */
+        .cam-info-panel {
+          position: absolute; bottom: 0; left: 0; right: 0;
+          background: rgba(0,0,0,0.72); padding: 10px 14px;
+          border-top: 2px solid rgba(8, 145, 178, 0.8);
+          z-index: 10;
+        }
+        .cam-map-thumb {
+          width: 56px; height: 56px; border-radius: 8px; overflow: hidden;
+          border: 1.5px solid rgba(255,255,255,0.2); background: rgba(20,70,55,0.7);
+          flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+        }
+        .cam-info-line {
+          margin: 0 0 1px; font-size: 0.68rem; color: #FFFFFF;
+          overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .cam-info-title { font-weight: 700; font-size: 0.78rem; }
+        .cam-info-sub { font-size: 0.62rem; color: #CBD5E1; }
+
+        /* Controls - above info panel in portrait */
+        .cam-controls {
+          position: absolute; left: 0; right: 0;
+          display: flex; justify-content: center; align-items: center;
+          gap: 20px; padding: 16px; z-index: 10;
+          bottom: 130px;
+        }
+        .cam-btn {
+          width: 46px; height: 46px; border-radius: 50%; color: white;
+          cursor: pointer; display: flex; align-items: center; justify-content: center;
+          backdrop-filter: blur(4px); border: none;
+        }
+        .cam-btn-secondary {
+          background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25) !important;
+        }
+        .cam-btn-close {
+          background: rgba(239,68,68,0.3); border: 1px solid rgba(239,68,68,0.5) !important;
+        }
+        .cam-btn-capture {
+          width: 68px; height: 68px; border-radius: 50%; background: white;
+          border: 4px solid var(--ds-accent); cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 4px 24px rgba(0,0,0,0.4); transition: transform 0.15s;
+        }
+        .cam-btn-capture-inner {
+          width: 52px; height: 52px; border-radius: 50%;
+          border: 3px solid var(--ds-accent);
+        }
+
+        /* LANDSCAPE MODE */
+        @media (orientation: landscape) and (max-height: 500px) {
+          .cam-container { flex-direction: row; }
+          .cam-video { width: auto; height: 100%; flex: 1; }
+
+          .cam-info-panel {
+            position: absolute; top: 0; bottom: 0; right: 0; left: auto;
+            width: 220px; border-top: none; border-left: 2px solid rgba(8, 145, 178, 0.8);
+            padding: 10px 12px; overflow-y: auto;
+            display: flex; align-items: center;
+          }
+          .cam-map-thumb { width: 40px; height: 40px; }
+          .cam-info-line { font-size: 0.6rem; }
+          .cam-info-title { font-size: 0.7rem; }
+          .cam-info-sub { font-size: 0.55rem; }
+
+          .cam-controls {
+            bottom: auto; right: auto; left: 0; top: 0;
+            width: 70px; height: 100%;
+            flex-direction: column; justify-content: center;
+            padding: 10px; gap: 14px;
+          }
+          .cam-btn { width: 40px; height: 40px; }
+          .cam-btn-capture { width: 56px; height: 56px; }
+          .cam-btn-capture-inner { width: 42px; height: 42px; }
+        }
+
+        /* Small portrait screens */
+        @media (orientation: portrait) and (max-height: 700px) {
+          .cam-controls { bottom: 110px; gap: 16px; padding: 10px; }
+          .cam-btn-capture { width: 60px; height: 60px; }
+          .cam-btn-capture-inner { width: 46px; height: 46px; }
+          .cam-info-panel { padding: 8px 12px; }
+          .cam-map-thumb { width: 44px; height: 44px; }
         }
       `}</style>
     </div>
