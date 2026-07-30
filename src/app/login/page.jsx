@@ -66,10 +66,13 @@ export default function LoginPage() {
   const handleUnitSelect = (unit) => {
     login(determinedRole, unit, email);
     setShowUnitModal(false);
-    
-    if (determinedRole === 'admin sis' || determinedRole === 'admin llk') router.push('/admin');
-    else if (determinedRole === 'validator') router.push('/validator/scan');
-    else if (determinedRole === 'user') router.push('/user');
+    if (returnUrl) {
+      router.push(returnUrl);
+    } else if (determinedRole === 'validator') {
+      router.push('/validator/scan');
+    } else {
+      router.push('/dokumentasi');
+    }
   };
 
   return (
