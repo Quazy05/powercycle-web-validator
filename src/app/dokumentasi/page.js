@@ -430,7 +430,7 @@ export default function DokumentasiPage() {
               </label>
 
               <button onClick={() => setKegiatan('Input Sampah')} style={{ width: '100%', padding: '18px 20px', background: kegiatan === 'Input Sampah' ? 'rgba(8, 145, 178, 0.2)' : 'rgba(255,255,255,0.04)', border: kegiatan === 'Input Sampah' ? '2px solid var(--ds-accent)' : '1.5px solid rgba(255,255,255,0.1)', borderRadius: 14, cursor: 'pointer', textAlign: 'left', marginBottom: 10, transition: 'all 0.2s', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', flexShrink: 0 }}>🗑️</div>
+                
                 <div>
                   <span style={{ display: 'block', color: '#FFFFFF', fontWeight: 700, fontSize: '0.95rem' }}>Input Sampah</span>
                   <span style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem', marginTop: 2 }}>Dokumentasi kegiatan pencatatan sampah</span>
@@ -438,7 +438,7 @@ export default function DokumentasiPage() {
               </button>
 
               <button onClick={() => setKegiatan('Input Pemanfaatan (Program)')} style={{ width: '100%', padding: '18px 20px', background: kegiatan === 'Input Pemanfaatan (Program)' ? 'rgba(8, 145, 178, 0.2)' : 'rgba(255,255,255,0.04)', border: kegiatan === 'Input Pemanfaatan (Program)' ? '2px solid var(--ds-accent)' : '1.5px solid rgba(255,255,255,0.1)', borderRadius: 14, cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(99, 102, 241, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', flexShrink: 0 }}>♻️</div>
+                
                 <div>
                   <span style={{ display: 'block', color: '#FFFFFF', fontWeight: 700, fontSize: '0.95rem' }}>Input Pemanfaatan (Program)</span>
                   <span style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem', marginTop: 2 }}>Dokumentasi kegiatan program pemanfaatan</span>
