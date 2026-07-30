@@ -184,7 +184,7 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
           </nav>
 
           <div className="header-actions">
-            <a href="/dokumentasi" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 28px', background: 'rgba(8, 145, 178, 0.1)', color: 'var(--ds-accent)', borderRadius: 99, fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none', border: '1.5px solid rgba(8, 145, 178, 0.3)', transition: 'all 0.25s' }}><Camera size={16} />Dokumentasi</a>
+            
               <a href="/login" className="btn-login">
               Masuk <ArrowRight size={16} />
             </a>
