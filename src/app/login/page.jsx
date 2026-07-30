@@ -3,7 +3,9 @@ import { useState } from 'react';
 import { Building2, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { UNIT_LIST } from '../lib/mockData';
+import { UNIT_LIST as FALLBACK_UNIT_LIST } from '../lib/mockData';
+import { db } from '../lib/firebase';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { auth } from '../lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
@@ -25,6 +27,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showUnitModal, setShowUnitModal] = useState(false);
+  const [unitList, setUnitList] = useState(FALLBACK_UNIT_LIST);
   const [determinedRole, setDeterminedRole] = useState('user');
 
   const handleSubmit = async (e) => {
@@ -220,7 +223,7 @@ export default function LoginPage() {
             </p>
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              {UNIT_LIST.map(unit => (
+              {unitList.map(unit => (
                 <button
                   key={unit}
                   onClick={() => handleUnitSelect(unit)}

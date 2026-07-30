@@ -111,7 +111,7 @@ export default function DokumentasiPage() {
         streamRef.current.getTracks().forEach(t => t.stop());
       }
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: front ? 'user' : 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
+        video: { facingMode: front ? 'user' : 'environment' },
         audio: false
       });
       streamRef.current = stream;
