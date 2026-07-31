@@ -373,6 +373,25 @@ export default function DokumentasiPage() {
     }
   };
 
+  const handleRotate = useCallback(() => {
+    if (!capturedImage || !canvasRef.current) return;
+    const img = new Image();
+    img.onload = () => {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      canvas.width = img.height;
+      canvas.height = img.width;
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(Math.PI / 2);
+      ctx.drawImage(img, -img.width / 2, -img.height / 2);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      drawOverlay(ctx, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+      setCapturedImage(dataUrl);
+    };
+    img.src = capturedImage;
+  }, [capturedImage, drawOverlay]);
+
   const handleRetake = () => {
     setCapturedImage(null);
     startCamera(useFrontCamera);
