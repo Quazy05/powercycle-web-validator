@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Building2, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -29,6 +29,24 @@ export default function LoginPage() {
   const [showUnitModal, setShowUnitModal] = useState(false);
   const [unitList, setUnitList] = useState(FALLBACK_UNIT_LIST);
   const [determinedRole, setDeterminedRole] = useState('user');
+
+  useEffect(() => {
+    const fetchUnits = async () => {
+      try {
+        const q = query(collection(db, 'master_unit'), orderBy('nama_unit', 'asc'));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+          const units = snapshot.docs.map(doc => doc.data().nama_unit);
+          setUnitList(units);
+        } else {
+          console.log("No units found in Firebase, using fallback");
+        }
+      } catch (error) {
+        console.error('Failed to fetch units from Firebase:', error);
+      }
+    };
+    fetchUnits();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
