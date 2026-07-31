@@ -484,7 +484,7 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
                   {mapLocations.map((loc) => {
                     const statsForLoc = unitStats.find(u => u.unit === loc.id);
-                    const isActive = activeMapLoc.id === loc.id;
+                    const isActive = activeMapLoc?.id === loc.id;
                     return (
                       <div
                         key={loc.id}
@@ -524,14 +524,14 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
             
             <div className="map-iframe-wrapper clay-card">
               <iframe
-                src={activeMapLoc.embedUrl}
+                src={activeMapLoc?.embedUrl || ""}
                 width="100%"
                 height="100%"
                 style={{ border: 0, borderRadius: '1.5rem' }}
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title={`Peta Lokasi ${activeMapLoc.name}`}
+                title={`Peta Lokasi ${activeMapLoc?.name || ""}`}
               />
             </div>
           </div>
