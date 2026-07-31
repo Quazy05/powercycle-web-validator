@@ -21,7 +21,12 @@ export async function GET() {
       tempDeposits.push({ id: doc.id, ...doc.data() });
     });
 
-    
+    const masterUnitSnapshot = await getDocs(collection(db, 'master_unit'));
+    const masterUnits = [];
+    masterUnitSnapshot.forEach(doc => {
+      masterUnits.push({ id: doc.id, ...doc.data() });
+    });
+
     const allDeposits = [...deposits, ...tempDeposits];
 
     
@@ -83,7 +88,8 @@ export async function GET() {
       },
       monthlyData,
       unitStats,
-      deposits: allDeposits
+      deposits: allDeposits,
+      masterUnits
     });
   } catch (error) {
     console.error('Stats API error:', error);

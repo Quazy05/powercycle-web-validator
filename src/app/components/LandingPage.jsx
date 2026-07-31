@@ -11,7 +11,7 @@ import {
   PieChart, Pie, Cell, Legend
 } from 'recharts';
 import {
-  UNIT_LIST, formatWeight, formatWeightTon
+  formatWeight, formatWeightTon
 } from '../lib/mockData';
 
 function useCountUp(target, duration = 2000) {
@@ -43,10 +43,6 @@ const PLNLogo = ({ size = 64, unit = '' }) => {
   }
   return null;
 };
-const MAP_LOCATIONS = [
-  { id: 'Wonogiri', name: 'PLTA Wonogiri', embedUrl: 'https://maps.google.com/maps?q=PLTA+Wonogiri&z=15&output=embed' },
-  { id: 'Banjarnegara', name: 'PLTA PB.Soedirman', embedUrl: 'https://maps.google.com/maps?q=PLTA+Mrica+Banjarnegara&z=15&output=embed' }
-];
 
 export default function LandingPage({ initialDeposits = [], mockUsers = [], pemanfaatanData = [] }) {
   const router = useRouter();
@@ -54,7 +50,9 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
   const [scrolled, setScrolled] = useState(false);
   const [activeUnit, setActiveUnit] = useState('all');
   const [showTopBtn, setShowTopBtn] = useState(false);
-  const [activeMapLoc, setActiveMapLoc] = useState(MAP_LOCATIONS[0]);
+  const [activeMapLoc, setActiveMapLoc] = useState(null);
+  const [masterUnits, setMasterUnits] = useState([]);
+  const [mapLocations, setMapLocations] = useState([]);
   const [firebaseDeposits, setFirebaseDeposits] = useState(initialDeposits);
   const [firebaseStats, setFirebaseStats] = useState(null);
   const [firebaseMonthlyData, setFirebaseMonthlyData] = useState(null);
@@ -70,6 +68,12 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
           setFirebaseStats(data.stats || null);
           setFirebaseMonthlyData(data.monthlyData || null);
           setFirebaseUnitStats(data.unitStats || null);
+          if (data.masterUnits) {
+            setMasterUnits(data.masterUnits);
+            const mapped = data.masterUnits.map(u => ({ id: u.nama_unit, name: u.nama_unit, embedUrl: u.map_url || '' }));
+            setMapLocations(mapped);
+            if (mapped.length > 0) setActiveMapLoc(mapped[0]);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch stats from Firebase:', error);
@@ -131,14 +135,15 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
     if (firebaseUnitStats) {
       return firebaseUnitStats;
     }
-    return UNIT_LIST.map(unit => {
+    return masterUnits.map(mu => {
+      const unit = mu.nama_unit;
       const unitDeposits = firebaseDeposits.filter(d => d.unit === unit);
       const totalWeight = unitDeposits.reduce((s, d) => s + (Number(d.weight) || 0), 0);
       const totalTransactions = unitDeposits.length;
       const uniqueUsers = new Set(unitDeposits.map(d => d.user).filter(Boolean));
       return { unit, totalWeight, totalTransactions, nasabah: uniqueUsers.size };
     });
-  }, [firebaseDeposits, firebaseUnitStats]);
+  }, [firebaseDeposits, firebaseUnitStats, masterUnits]);
 
   const pemanfaatanStats = useMemo(() => {
     return {
@@ -260,7 +265,7 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
                   <span className="hero-stat-label">Transaksi</span>
                 </div>
                 <div className="hero-stat-item">
-                  <span className="hero-stat-value">{UNIT_LIST.length}</span>
+                  <span className="hero-stat-value">{masterUnits.length}</span>
                   <span className="hero-stat-label">Unit Aktif</span>
                 </div>
               </div>
@@ -357,13 +362,13 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
             >
               Semua Unit
             </button>
-            {UNIT_LIST.map(unit => (
+            {masterUnits.map(mu => (
               <button
-                key={unit}
-                className={`filter-btn ${activeUnit === unit ? 'active' : ''}`}
-                onClick={() => setActiveUnit(unit)}
+                key={mu.nama_unit}
+                className={`filter-btn ${activeUnit === mu.nama_unit ? 'active' : ''}`}
+                onClick={() => setActiveUnit(mu.nama_unit)}
               >
-                {unit === 'Wonogiri' ? 'PLTA Wonogiri' : (unit === 'Banjarnegara' ? 'PLTA PB.Soedirman' : unit)}
+                {mu.nama_unit}
               </button>
             ))}
           </div>
@@ -401,7 +406,7 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
                 <Recycle size={24} />
               </div>
               <div className="stat-info">
-                <span className="stat-value">{UNIT_LIST.length}</span>
+                <span className="stat-value">{masterUnits.length}</span>
                 <span className="stat-label">Unit Operasional</span>
               </div>
             </div>
@@ -477,7 +482,7 @@ export default function LandingPage({ initialDeposits = [], mockUsers = [], pema
                 <p style={{ fontSize: '0.9rem', color: 'var(--ds-text-muted)', margin: 0, lineHeight: 1.6 }}>Pilih unit di bawah ini untuk mengarahkan peta ke lokasi tersebut.</p>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-                  {MAP_LOCATIONS.map((loc) => {
+                  {mapLocations.map((loc) => {
                     const statsForLoc = unitStats.find(u => u.unit === loc.id);
                     const isActive = activeMapLoc.id === loc.id;
                     return (

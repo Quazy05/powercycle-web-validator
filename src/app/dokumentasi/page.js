@@ -568,9 +568,6 @@ export default function DokumentasiPage() {
               <img src={capturedImage} alt="Preview" style={{ width: '100%', display: 'block' }} />
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
-              <button onClick={handleRotate} style={{ flex: 1, padding: '14px', background: 'rgba(255,255,255,0.08)', color: 'white', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: 99, fontSize: '0.92rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                <RotateCw size={18} /> Putar
-              </button>
               <button onClick={handleRetake} style={{ flex: 1, padding: '14px', background: 'rgba(255,255,255,0.08)', color: 'white', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: 99, fontSize: '0.92rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                 <RotateCcw size={18} /> Ulangi
               </button>
